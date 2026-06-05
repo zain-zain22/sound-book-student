@@ -3,42 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ഡിജിറ്റൽ സൗണ്ട് ബുക്ക് - റിവിഷൻ</title>
+    <title>ഡെയിലി റിവിഷൻ - സൗണ്ട് ബുക്ക്</title>
     <style>
         * { box-sizing: border-box; }
         body { font-family: sans-serif; background: #2c3e50; text-align: center; padding: 5px; margin: 0; color: white; }
-        .page-box { background: white; border-radius: 8px; padding: 10px; max-width: 500px; margin: 10px auto; position: relative; color: #333; }
+        .page-box { background: white; border-radius: 8px; padding: 10px; max-width: 500px; margin: 15px auto; position: relative; color: #333; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         
-        /* ഫുൾ റെസ്പോൺസീവ് ഇമേജ് റാപ്പർ */
+        /* റെസ്പോൺസീവ് ഇമേജ് റാപ്പർ */
         .img-wrap { position: relative; display: inline-block; width: 100%; background: #000; }
         .img-wrap img { display: block; width: 100%; height: auto; }
         
-        /* വാക്കുകളുടെ ടച്ച് ഏരിയ പൂർണ്ണമായും മറച്ചിരിക്കുന്നു (Invisible Touch Area) */
+        /* അദൃശ്യമായ ടച്ച് ഏരിയ (Invisible Touch Area) */
         .word-zone { 
             position: absolute; 
-            background: transparent; /* നിറമില്ലാത്തതാക്കി മാറ്റി */
-            cursor: pointer; 
-            -webkit-tap-highlight-color: transparent; /* മൊബൈലിൽ തൊടുമ്പോൾ വരുന്ന താല്ക്കാലിക ബോക്സ് ഒഴിവാക്കാൻ */
-        }
-        
-        /* തൊട്ടു കഴിഞ്ഞാലും നിറം മാറേണ്ടതില്ല (ക്ലാസ്സ് മാറ്റമില്ലാതെ നിലനിർത്തുന്നു) */
-        .word-zone.done { 
             background: transparent; 
-            border: none; 
+            cursor: pointer; 
+            -webkit-tap-highlight-color: transparent; 
         }
         
+        /* ലോക്ക് സ്റ്റൈൽ */
         .locked { filter: blur(5px) grayscale(100%); pointer-events: none; }
-        .lock-text { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); color:white; display:flex; justify-content:center; align-items:center; font-size:18px; font-weight:bold; border-radius: 8px; }
+        .lock-text { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); color:white; display:flex; justify-content:center; align-items:center; font-size:16px; font-weight:bold; border-radius: 8px; padding: 10px; }
+        
         h1 { font-size: 20px; margin: 10px 0; }
-        h3 { margin: 5px 0; font-size: 16px; }
+        h3 { margin: 5px 0; font-size: 15px; color: #2c3e50; }
+        .badge { background: #e67e22; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; float: right; }
+        .badge.completed { background: #2ecc71; }
     </style>
 </head>
 <body>
 
-    <h1>📖 എന്റെ ചിത്രപുസ്തകം 🔊</h1>
+    <h1>📖 ഡെയിലി റിവിഷൻ ബുക്ക് 🔊</h1>
     <div id="bookContainer"></div>
 
     <script>
+        // ലോക്കൽ സ്റ്റോറേജിൽ നിന്ന് പേജുകൾ എടുക്കുന്നു
         let bookPages = JSON.parse(localStorage.getItem('soundBookPages')) || [];
 
         function renderBook() {
@@ -46,12 +45,26 @@
             container.innerHTML = bookPages.length === 0 ? '<p style="color:white;">പാഠങ്ങൾ ഒന്നും ലഭ്യമാക്കിയിട്ടില്ല.</p>' : '';
 
             bookPages.forEach((page, index) => {
+                // റിവിഷൻ ലോക്കിംഗ് ലോജിക്:
+                // ആദ്യത്തെ പേജ് (ഏറ്റവും പുതിയത്) എപ്പോഴും അൺലോക്ക് ആയിരിക്കും (index === 0).
+                // പിന്നീടുള്ള ഓരോ പേജും തുറക്കണമെങ്കിൽ തൊട്ടുമുകളിലുള്ള പേജ് (index - 1) പൂർത്തിയായിരിക്കണം.
                 let isLocked = false;
-                if (index < bookPages.length - 1 && !bookPages[index + 1].completed) isLocked = true;
+                if (index > 0) {
+                    let previousDayPage = bookPages[index - 1];
+                    if (!previousDayPage.completed) {
+                        isLocked = true;
+                    }
+                }
 
                 let box = document.createElement('div');
                 box.className = 'page-box';
-                box.innerHTML = `<h3>📚 പാഠം ഭാഗം - പേജ് ${bookPages.length - index}</h3>`;
+                
+                // പേജ് ഹെഡ്ഡിംഗ്
+                let pageNum = bookPages.length - index;
+                let statusBadge = page.completed ? '<span class="badge completed">✅ പഠിച്ചു കഴിഞ്ഞു</span>' : '<span class="badge">📖 ഇന്നത്തെ പാഠം</span>';
+                if(index > 0) statusBadge = page.completed ? '<span class="badge completed">✅ റിവിഷൻ കഴിഞ്ഞു</span>' : '<span class="badge">⏳ കാത്തിരിക്കുന്നു</span>';
+                
+                box.innerHTML = `<h3>📚 പാഠം ഭാഗം - പേജ് ${pageNum} ${statusBadge}</h3>`;
 
                 let content = document.createElement('div');
                 if(isLocked) content.className = 'locked';
@@ -63,10 +76,10 @@
                 img.src = page.image;
                 wrap.appendChild(img);
 
-                // വാക്കുകളുടെ ഇൻവിസിബിൾ ടച്ച് ഏരിയകൾ സെറ്റ് ചെയ്യുന്നു
+                // വാക്കുകൾ സെറ്റ് ചെയ്യുന്നു
                 page.zones.forEach((zone) => {
                     let zoneDiv = document.createElement('div');
-                    zoneDiv.className = 'word-zone' + (zone.clicked ? ' done' : '');
+                    zoneDiv.className = 'word-zone';
                     zoneDiv.style.left = zone.coords.left + '%';
                     zoneDiv.style.top = zone.coords.top + '%';
                     zoneDiv.style.width = zone.coords.width + '%';
@@ -76,7 +89,6 @@
                         new Audio(zone.audioSrc).play();
                         if(!zone.clicked) {
                             zone.clicked = true;
-                            zoneDiv.classList.add('done');
                             checkStatus(page.id);
                         }
                     };
@@ -86,10 +98,11 @@
                 content.appendChild(wrap);
                 box.appendChild(content);
 
+                // ലോക്ക് സ്ക്രീൻ മെസ്സേജ്
                 if(isLocked) {
                     let lock = document.createElement('div');
                     lock.className = 'lock-text';
-                    lock.innerText = '🔒 താഴത്തെ പേജ് പൂർത്തിയാക്കൂ!';
+                    lock.innerText = `🔒 മുകളിലെ പേജ് പൂർത്തിയാക്കിയാൽ മാത്രമേ ഈ മുൻദിവസത്തെ പേജ് അൺലോക്ക് ആകൂ!`;
                     box.appendChild(lock);
                 }
                 container.appendChild(box);
@@ -99,10 +112,12 @@
         function checkStatus(pageId) {
             let page = bookPages.find(p => p.id === pageId);
             if(page.zones.every(z => z.clicked)) {
-                page.completed = true;
-                localStorage.setItem('soundBookPages', JSON.stringify(bookPages));
-                alert("🎉 ഈ പേജ് പൂർത്തിയായി! അടുത്ത പേജ് തുറന്നു.");
-                renderBook();
+                if (!page.completed) {
+                    page.completed = true;
+                    localStorage.setItem('soundBookPages', JSON.stringify(bookPages));
+                    alert("🎉 ഈ പേജ് പൂർത്തിയായി! ഇതിന് മുമ്പത്തെ ദിവസത്തെ പാഠം താഴെ അൺലോക്ക് ആയിട്ടുണ്ട്.");
+                    renderBook();
+                }
             }
         }
 
