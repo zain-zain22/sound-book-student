@@ -2,30 +2,38 @@
 <html lang="ml">
 <head>
     <meta charset="UTF-8">
-    <title>ഡിജിറ്റൽ സൗണ്ട് ബുക്ക് - കുട്ടികളുടെ റിവിഷൻ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ഡിജിറ്റൽ സൗണ്ട് ബുക്ക് - റിവിഷൻ</title>
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; text-align: center; padding: 20px; }
-        .page-box { background: white; border: 3px solid #2c3e50; border-radius: 8px; padding: 20px; max-width: 550px; margin: 20px auto; position: relative; }
-        .img-wrap { position: relative; display: inline-block; }
-        .img-wrap img { display: block; max-width: 100%; height: auto; }
-        .word-zone { position: absolute; background: rgba(52, 152, 219, 0.1); cursor: pointer; }
-        .word-zone.done { background: rgba(46, 204, 113, 0.3); border: 2px solid #2ecc71; }
-        .locked { filter: blur(4px) grayscale(100%); pointer-events: none; }
-        .lock-text { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); color:white; display:flex; justify-content:center; align-items:center; font-size:20px; font-weight:bold; }
+        * { box-sizing: border-box; }
+        body { font-family: sans-serif; background: #2c3e50; text-align: center; padding: 5px; margin: 0; color: white; }
+        .page-box { background: white; border-radius: 8px; padding: 10px; max-width: 500px; margin: 10px auto; position: relative; color: #333; }
+        
+        /* ഫുൾ റെസ്പോൺസീവ് ഇമേജ് റാപ്പർ */
+        .img-wrap { position: relative; display: inline-block; width: 100%; background: #000; }
+        .img-wrap img { display: block; width: 100%; height: auto; }
+        
+        /* വാക്കുകളുടെ ടച്ച് ഏരിയ (ശതമാനക്കണക്കിൽ) */
+        .word-zone { position: absolute; background: rgba(52, 152, 219, 0.1); cursor: pointer; border-radius: 4px; }
+        .word-zone.done { background: rgba(46, 204, 113, 0.4); border: 2px solid #2ecc71; }
+        
+        .locked { filter: blur(5px) grayscale(100%); pointer-events: none; }
+        .lock-text { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); color:white; display:flex; justify-content:center; align-items:center; font-size:18px; font-weight:bold; border-radius: 8px; }
+        h1 { font-size: 20px; margin: 10px 0; }
+        h3 { margin: 5px 0; font-size: 16px; }
     </style>
 </head>
 <body>
 
-    <h1>✍️ എന്റെ ചിത്രപുസ്തകം (റിവിഷൻ ഏരിയ) 🔊</h1>
+    <h1>📖 എന്റെ ചിത്രപുസ്തകം 🔊</h1>
     <div id="bookContainer"></div>
 
     <script>
-        // ലോക്കൽ സ്റ്റോറേജിൽ നിന്ന് ടീച്ചർ അപ്‌ലോഡ് ചെയ്ത ഡാറ്റ എടുക്കുന്നു
         let bookPages = JSON.parse(localStorage.getItem('soundBookPages')) || [];
 
         function renderBook() {
             const container = document.getElementById('bookContainer');
-            container.innerHTML = bookPages.length === 0 ? '<p>ടീച്ചർ പുതിയ പാഠങ്ങൾ ഒന്നും അപ്‌ലോഡ് ചെയ്തിട്ടില്ല.</p>' : '';
+            container.innerHTML = bookPages.length === 0 ? '<p style="color:white;">പാഠങ്ങൾ ഒന്നും ലഭ്യമാക്കിയിട്ടില്ല.</p>' : '';
 
             bookPages.forEach((page, index) => {
                 let isLocked = false;
@@ -33,7 +41,7 @@
 
                 let box = document.createElement('div');
                 box.className = 'page-box';
-                box.innerHTML = `<h3>പാഠം പേജ് - ${bookPages.length - index}</h3>`;
+                box.innerHTML = `<h3>📚 പാഠം ഭാഗം - പേജ് ${bookPages.length - index}</h3>`;
 
                 let content = document.createElement('div');
                 if(isLocked) content.className = 'locked';
@@ -45,13 +53,14 @@
                 img.src = page.image;
                 wrap.appendChild(img);
 
-                page.zones.forEach((zone, zIdx) => {
+                // ശതമാനക്കണക്ക് വെച്ച് കൃത്യമായ സ്ഥാനത്ത് ബോക്സുകൾ വെക്കുന്നു
+                page.zones.forEach((zone) => {
                     let zoneDiv = document.createElement('div');
                     zoneDiv.className = 'word-zone' + (zone.clicked ? ' done' : '');
-                    zoneDiv.style.left = zone.coords.left + 'px';
-                    zoneDiv.style.top = zone.coords.top + 'px';
-                    zoneDiv.style.width = zone.coords.width + 'px';
-                    zoneDiv.style.height = zone.coords.height + 'px';
+                    zoneDiv.style.left = zone.coords.left + '%';
+                    zoneDiv.style.top = zone.coords.top + '%';
+                    zoneDiv.style.width = zone.coords.width + '%';
+                    zoneDiv.style.height = zone.coords.height + '%';
 
                     zoneDiv.onclick = function() {
                         new Audio(zone.audioSrc).play();
@@ -82,7 +91,7 @@
             if(page.zones.every(z => z.clicked)) {
                 page.completed = true;
                 localStorage.setItem('soundBookPages', JSON.stringify(bookPages));
-                alert("🎉 ഈ പേജ് പൂർത്തിയായി! അടുത്ത പേജ് അൺലോക്ക് ആയി.");
+                alert("🎉 ഈ പേജ് പൂർത്തിയായി! അടുത്ത പേജ് തുറന്നു.");
                 renderBook();
             }
         }
