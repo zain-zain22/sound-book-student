@@ -27,6 +27,8 @@
         .badge { background: #e67e22; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; float: right; }
         .badge.completed { background: #2ecc71; }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body>
 
@@ -63,31 +65,47 @@
     </div>
 
     <script>
-        let schoolData = JSON.parse(localStorage.getItem('madrasaSystemData')) || {};
-        let bookPages = JSON.parse(localStorage.getItem('soundBookPages')) || [];
+        const firebaseConfig = {
+            apiKey: "AIzaSyBXSgalqZ3h6Dle6pzu2VMXYkCKM4X3Pis",
+            authDomain: "sond-book.firebaseapp.com",
+            projectId: "sond-book",
+            storageBucket: "sond-book.appspot.com",
+            messagingSenderId: "731880152541",
+            appId: "1:731880152541:web:da0e241383b850381dea34"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let bookPages = [];
         let selectedMadrasa = "";
         let selectedStudent = "";
         let startTime = null;
 
         function initLogin() {
-            const mSelect = document.getElementById('studMadrasaSelect');
-            mSelect.innerHTML = '<option value="">-- തിരഞ്ഞെടുക്കുക --</option>';
-            for (let mName in schoolData) {
-                let opt = document.createElement('option');
-                opt.value = mName; opt.innerText = mName;
-                mSelect.appendChild(opt);
-            }
+            db.collection("madrasas").onSnapshot(snapshot => {
+                const mSelect = document.getElementById('studMadrasaSelect');
+                mSelect.innerHTML = '<option value="">-- തിരഞ്ഞെടുക്കുക --</option>';
+                snapshot.forEach(doc => {
+                    let opt = document.createElement('option');
+                    opt.value = doc.id; opt.innerText = doc.id;
+                    mSelect.appendChild(opt);
+                });
+            });
         }
 
         function loadStudentsForLogin() {
             let mName = document.getElementById('studMadrasaSelect').value;
             const sSelect = document.getElementById('studNameSelect');
             sSelect.innerHTML = '';
-            if(!mName || !schoolData[mName]) return;
-            schoolData[mName].forEach(stud => {
-                let opt = document.createElement('option');
-                opt.value = stud; opt.innerText = stud;
-                sSelect.appendChild(opt);
+            if(!mName) return;
+            
+            db.collection("madrasas").doc(mName).collection("students").onSnapshot(snapshot => {
+                snapshot.forEach(doc => {
+                    let opt = document.createElement('option');
+                    opt.value = doc.id; opt.innerText = doc.id;
+                    sSelect.appendChild(opt);
+                });
             });
         }
 
@@ -101,7 +119,17 @@
             document.getElementById('welcomeText').innerText = `👤 വിദ്യാർത്ഥി: ${selectedStudent} (${selectedMadrasa})`;
             
             startTime = new Date();
-            renderBook();
+            
+            // ഫയർബേസിൽ നിന്ന് എല്ലാ പേജുകളും തത്സമയം എടുക്കുന്നു
+            db.collection("pages").orderBy("timestamp", "asc").onSnapshot(snapshot => {
+                bookPages = [];
+                snapshot.forEach(doc => {
+                    let p = doc.data();
+                    p.completed = false; // ഓരോ ലോഗിനിലും പുതിയതായി തുടങ്ങാൻ
+                    bookPages.push(p);
+                });
+                renderBook();
+            });
         }
 
         function renderBook() {
@@ -109,22 +137,16 @@
             container.innerHTML = bookPages.length === 0 ? '<p style="color:white;">പാഠങ്ങൾ ഒന്നും ലഭ്യമാക്കിയിട്ടില്ല.</p>' : '';
 
             bookPages.forEach((page, index) => {
-                // ലോക്കിംഗ് ലോജിക്: ഒന്നാമത്തെ പേജ് (index 0) എപ്പോഴും അൺലോക്ക് ആയിരിക്കും.
-                // അടുത്ത പേജുകൾ (index > 0) തുറക്കണമെങ്കിൽ അതിന് തൊട്ടുമുൻപത്തെ പേജ് പൂർത്തിയാക്കണം.
                 let isLocked = false;
                 if (index > 0) {
                     let previousPage = bookPages[index - 1];
-                    if (!previousPage.completed) {
-                        isLocked = true;
-                    }
+                    if (!previousPage.completed) isLocked = true;
                 }
 
                 let box = document.createElement('div');
                 box.className = 'page-box';
-                
                 let pageNum = index + 1;
                 let statusBadge = page.completed ? '<span class="badge completed">✅ കഴിഞ്ഞു</span>' : '<span class="badge">📖 പഠിക്കുക</span>';
-                
                 box.innerHTML = `<h3>📚 പാഠം ഭാഗം - പേജ് ${pageNum} ${statusBadge}</h3>`;
 
                 let content = document.createElement('div');
@@ -146,7 +168,8 @@
                     zoneDiv.style.height = zone.coords.height + '%';
 
                     zoneDiv.onclick = function() {
-                        new Audio(zone.audioSrc).play();
+                        let audio = new Audio(zone.audioSrc);
+                        audio.play();
                         if(!zone.clicked) {
                             zone.clicked = true;
                             checkStatus(page.id);
@@ -173,7 +196,6 @@
             if(page.zones.every(z => z.clicked)) {
                 if (!page.completed) {
                     page.completed = true;
-                    localStorage.setItem('soundBookPages', JSON.stringify(bookPages));
                     renderBook();
                 }
             }
