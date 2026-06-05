@@ -2,93 +2,78 @@
 <html lang="ml">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>സൗണ്ട് ബുക്ക് - ഫയർബേസ് അഡ്മിൻ പാനൽ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>സൗണ്ട് ബുക്ക് - അഡ്മിൻ പാനൽ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; padding: 10px; background: #eef2f3; text-align: center; margin: 0; }
-        .admin-box { background: white; max-width: 500px; margin: 10px auto; padding: 15px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: left; }
-        h2, h3 { text-align: center; color: #2c3e50; margin-top: 5px; }
-        .section { background: #f9f9f9; padding: 12px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #ddd; }
-        input[type="text"], select, input[type="file"] { width: 100%; padding: 10px; margin: 5px 0 10px 0; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
-        .image-container { position: relative; display: inline-block; border: 2px solid #34495e; width: 100%; background: #000; margin-top: 5px; }
-        .image-container img { display: block; width: 100%; height: auto; }
-        .selection-box { position: absolute; border: 2px dashed #e74c3c; background: rgba(231, 76, 60, 0.3); display: none; pointer-events: none; }
-        .controls input[type="range"] { width: 100%; }
-        button { color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer; margin: 5px 0; font-weight: bold; width: 100%; font-size: 15px; }
-        .btn-blue { background: #3498db; }
-        .btn-green { background: #2ecc71; }
-        .btn-record { background: #e74c3c; }
-        .btn-stop { background: #2c3e50; display: none; }
-        .btn-delete { background: #c0392b; padding: 3px 8px; width: auto; font-size: 12px; float: right; margin: 0; }
-        .status-text { font-weight: bold; color: #e74c3c; text-align: center; margin: 5px 0; }
-        #audioPlayback { margin-top: 5px; display: none; width: 100%; }
-        .list-item { background: #fff; padding: 8px; border: 1px solid #eee; margin-top: 5px; border-radius: 4px; font-size: 13px; }
-        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); color: white; justify-content: center; align-items: center; font-size: 20px; font-weight: bold; z-index: 9999; }
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .navbar { background: linear-gradient(135deg, #1e3c72, #2a5298); }
+        .card { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .btn-primary { background: linear-gradient(135deg, #1e3c72, #2a5298); border: none; }
+        .btn-primary:hover { background: linear-gradient(135deg, #2a5298, #1e3c72); }
+        .loading-spinner { display: none; }
     </style>
-
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 </head>
 <body>
 
-    <div class="loading-overlay" id="loadingOverlay">🔄 ദയവായി കാത്തിരിക്കൂ, ഫയലുകൾ അപ്‌ലോഡ് ചെയ്യുന്നു...</div>
-
-    <div class="admin-box">
-        <h2>🏫 മദ്രസ & വിദ്യാർത്ഥി മാനേജ്‌മെന്റ്</h2>
-        
-        <div class="section">
-            <h4>1. പുതിയ മദ്രസ ചേർക്കുക:</h4>
-            <input type="text" id="madrasaName" placeholder="മദ്രസയുടെ പേര് എഴുതുക...">
-            <button class="btn-blue" onclick="addMadrasa()">➕ മദ്രസ സേവ് ചെയ്യുക</button>
+    <nav class="navbar navbar-dark shadow-sm mb-4">
+        <div class="container justify-content-center">
+            <span class="navbar-brand mb-0 h1 text-center"><i class="fa-solid fa-user-shield me-2"></i>മദ്രസ സൗണ്ട് ബുക്ക് - അഡ്മിൻ പാനൽ</span>
         </div>
+    </nav>
 
-        <div class="section">
-            <h4>2. മദ്രസയിലേക്ക് കുട്ടികളെ ചേർക്കുക:</h4>
-            <label>മദ്രസ തിരഞ്ഞെടുക്കുക:</label>
-            <select id="madrasaSelect"></select>
-            <input type="text" id="studentName" placeholder="കുട്ടിയുടെ പേര് എഴുതുക...">
-            <button class="btn-green" onclick="addStudent()">➕ കുട്ടിയെ സേവ് ചെയ്യുക</button>
+    <div class="container mb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                
+                <div class="card p-4 mb-4">
+                    <h4 class="text-center mb-4 text-primary fw-bold">പുതിയ ഫയൽ ചേർക്കുക</h4>
+                    
+                    <form id="uploadForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">മദ്രസയുടെ പേര് / സെക്ഷൻ:</label>
+                            <input type="text" id="madrasaName" class="form-control" placeholder="ഉദാ: ഹിദായത്തുൽ ഇസ്ലാം മദ്രസ" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">കുട്ടിയുടെ പേര്:</label>
+                            <input type="text" id="studentName" class="form-control" placeholder="കുട്ടിയുടെ പേര് ടൈപ്പ് ചെയ്യുക" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">പാഠപുസ്തകത്തിലെ ചിത്രം തിരഞ്ഞെടുക്കുക:</label>
+                            <input type="file" id="imageFile" class="form-control" accept="image/*" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">കുട്ടിയുടെ ഓഡിയോ റെക്കോർഡിംഗ് തിരഞ്ഞെടുക്കുക:</label>
+                            <input type="file" id="audioFile" class="form-control" accept="audio/*" required>
+                        </div>
+
+                        <button type="submit" id="submitBtn" class="btn btn-primary w-100 py-2 fw-bold">
+                            <span class="spinner-border spinner-border-sm loading-spinner me-2" id="spinner"></span>
+                            <span id="btnText"><i class="fa-solid fa-cloud-arrow-up me-2"></i>പേജ് കുട്ടികൾക്കായി പോസ്റ്റ് ചെയ്യുക</span>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card p-4">
+                    <h5 class="fw-bold mb-3 text-secondary">നിലവിൽ പോസ്റ്റ് ചെയ്തവ</h5>
+                    <div id="entriesList" class="list-group">
+                        <div class="text-center text-muted p-3">വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു...</div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 
-    <div class="admin-box">
-        <h2>📖 പാഠഭാഗങ്ങൾ അപ്‌ലോഡ് ചെയ്യുക</h2>
-        <input type="file" id="imageUploader" accept="image/*">
-        
-        <div id="mappingSection" style="display:none;">
-            <p style="color: #2c3e50; font-weight: bold; text-align:center;">📱 ചിത്രത്തിൽ വാക്കിന് മുകളിൽ തൊടുക:</p>
-            <div class="image-container" id="imageContainer" onclick="selectWordLocation(event)">
-                <img id="bookImg" src="" alt="Book Page">
-                <div class="selection-box" id="selectionBox"></div>
-            </div>
-            
-            <div class="controls section" style="margin-top:10px;">
-                <label>↔️ വീതി (Width):</label>
-                <input type="range" id="boxWidth" min="5" max="40" value="15" oninput="updateBoxSize()">
-                <label>↕️ ഉയരം (Height):</label>
-                <input type="range" id="boxHeight" min="3" max="20" value="6" oninput="updateBoxSize()">
-            </div>
-            
-            <button type="button" class="btn-record" id="startBtn" onclick="startRecording()">🎤 റെക്കോർഡിംഗ് തുടങ്ങുക</button>
-            <button type="button" class="btn-stop" id="stopBtn" onclick="stopRecording()">🛑 റെക്കോർഡിംഗ് നിർത്തുക</button>
-            <p class="status-text" id="recordStatus"></p>
-            <audio id="audioPlayback" controls></audio>
-            
-            <button type="button" class="btn-blue" onclick="saveWordZone()">💾 ഈ വാക്ക് ലിങ്ക് ചെയ്യുക</button>
-            <h4 id="zoneCount" style="color: #7f8c8d; text-align:center; margin: 5px 0;">(0 വാക്കുകൾ ചേർത്തു)</h4>
-        </div>
-        
-        <button class="btn-green" style="font-size:16px; margin-top:15px;" onclick="publishToStudentPage()">🚀 പേജ് കുട്ടികൾക്കായി പോസ്റ്റ് ചെയ്യുക</button>
-        
-        <hr style="margin: 20px 0;">
-        <h3>നിലവിൽ പോസ്റ്റ് ചെയ്ത പേജുകൾ:</h3>
-        <div id="postedPagesList"></div>
-    </div>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // Your Firebase Configuration from Screenshot
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBXSgalqZ3h6Dle6pzu2VMXYkCKM4X3Pis",
             authDomain: "sond-book.firebaseapp.com",
@@ -97,208 +82,110 @@
             messagingSenderId: "731880152541",
             appId: "1:731880152541:web:da0e241383b850381dea34"
         };
-        
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const storage = firebase.storage();
 
-        let currentZones = [];
-        let selectedFile = null;
-        let audioBlobs = []; 
-        let mediaRecorder;
-        let audioChunks = [];
-        let pctLeft = 0, pctTop = 0;
+        const uploadForm = document.getElementById('uploadForm');
+        const entriesList = document.getElementById('entriesList');
+        const submitBtn = document.getElementById('submitBtn');
+        const spinner = document.getElementById('spinner');
+        const btnText = document.getElementById('btnText');
 
-        // മദ്രസകൾ ലോഡ് ചെയ്യുക
-        function loadMadrasas() {
-            db.collection("madrasas").onSnapshot(snapshot => {
-                const select1 = document.getElementById('madrasaSelect');
-                select1.innerHTML = '';
-                snapshot.forEach(doc => {
-                    let opt = document.createElement('option');
-                    opt.value = doc.id; opt.innerText = doc.id;
-                    select1.appendChild(opt);
-                });
-            });
-        }
-
-        function addMadrasa() {
-            let name = document.getElementById('madrasaName').value.trim();
-            if(!name) return alert("പേര് ടൈപ്പ് ചെയ്യുക!");
-            db.collection("madrasas").doc(name).set({ created: true }).then(() => {
-                document.getElementById('madrasaName').value = '';
-                alert("മദ്രസ ചേർത്തു!");
-            });
-        }
-
-        function addStudent() {
-            let madrasa = document.getElementById('madrasaSelect').value;
-            let student = document.getElementById('studentName').value.trim();
-            if(!madrasa) return alert("ആദ്യം മദ്രസ ആഡ് ചെയ്യുക!");
-            if(!student) return alert("കുട്ടിയുടെ പേര് എഴുതുക!");
+        // ഫയലുകൾ സൌജന്യമായി സുരക്ഷിത ലിങ്ക് ആക്കി മാറ്റാനുള്ള ഫങ്ക്ഷൻ
+        async function freeUpload(file) {
+            const formData = new FormData();
+            formData.append('fileToUpload', file);
+            formData.append('reqtype', 'fileupload');
             
-            db.collection("madrasas").doc(madrasa).collection("students").doc(student).set({ name: student }).then(() => {
-                document.getElementById('studentName').value = '';
-                alert("വിദ്യാർത്ഥിയെ ചേർത്തു!");
+            // Catbox ഫ്രീ അപ്‌ലോഡിങ് സിസ്റ്റം വഴി ഫയൽ ബാക്ക്ഗ്രൗണ്ടിൽ അപ്‌ലോഡ് ചെയ്യുന്നു
+            const response = await fetch('https://catbox.moe/user/api.php', {
+                method: 'POST',
+                body: formData
             });
-        }
-
-        const imageUploader = document.getElementById('imageUploader');
-        const bookImg = document.getElementById('bookImg');
-        const selectionBox = document.getElementById('selectionBox');
-        const imgContainer = document.getElementById('imageContainer');
-
-        imageUploader.addEventListener('change', function(e) {
-            selectedFile = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                bookImg.onload = function() {
-                    document.getElementById('mappingSection').style.display = 'block';
-                    selectionBox.style.display = 'none';
-                    currentZones = [];
-                    audioBlobs = [];
-                    document.getElementById('zoneCount').innerText = "(0 വാക്കുകൾ ചേർത്തു)";
-                }
-                bookImg.src = event.target.result;
-            }
-            reader.readAsDataURL(selectedFile);
-        });
-
-        function selectWordLocation(event) {
-            const rect = imgContainer.getBoundingClientRect();
-            let clickX = event.clientX - rect.left;
-            let clickY = event.clientY - rect.top;
-            let bWidthPct = parseFloat(document.getElementById('boxWidth').value);
-            let bHeightPct = parseFloat(document.getElementById('boxHeight').value);
-            pctLeft = ((clickX / rect.width) * 100) - (bWidthPct / 2);
-            pctTop = ((clickY / rect.height) * 100) - (bHeightPct / 2);
-            drawSelectionBox();
-        }
-
-        function drawSelectionBox() {
-            let bWidthPct = document.getElementById('boxWidth').value;
-            let bHeightPct = document.getElementById('boxHeight').value;
-            selectionBox.style.left = pctLeft + '%';
-            selectionBox.style.top = pctTop + '%';
-            selectionBox.style.width = bWidthPct + '%';
-            selectionBox.style.height = bHeightPct + '%';
-            selectionBox.style.display = 'block';
-        }
-
-        function updateBoxSize() {
-            if (selectionBox.style.display === 'block') drawSelectionBox();
-        }
-
-        function startRecording() {
-            navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                mediaRecorder = new MediaRecorder(stream);
-                mediaRecorder.start();
-                audioChunks = [];
-                mediaRecorder.addEventListener("dataavailable", event => audioChunks.push(event.data));
-                mediaRecorder.addEventListener("stop", () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-                    audioBlobs.push(audioBlob); 
-                    document.getElementById('audioPlayback').src = URL.createObjectURL(audioBlob);
-                    document.getElementById('audioPlayback').style.display = 'block';
-                });
-                document.getElementById('startBtn').style.display = 'none';
-                document.getElementById('stopBtn').style.display = 'block';
-                document.getElementById('recordStatus').innerText = "🔴 റെക്കോർഡ് ചെയ്യുന്നു...";
-            }).catch(() => alert("മൈക്ക് ഓൺ ചെയ്യുക!"));
-        }
-
-        function stopRecording() {
-            mediaRecorder.stop();
-            document.getElementById('startBtn').style.display = 'block';
-            document.getElementById('stopBtn').style.display = 'none';
-            document.getElementById('recordStatus').innerText = "✅ റെക്കോർഡിംഗ് കഴിഞ്ഞു.";
-        }
-
-        function saveWordZone() {
-            let bWidthPct = parseFloat(document.getElementById('boxWidth').value);
-            let bHeightPct = parseFloat(document.getElementById('boxHeight').value);
-            if (selectionBox.style.display === 'none') return alert("ചിത്രത്തിൽ തൊടുക!");
-            if (audioBlobs.length === 0 || audioBlobs.length <= currentZones.length) return alert("ഓഡിയോ റെക്കോർഡ് ചെയ്യുക!");
-
-            currentZones.push({
-                coords: { left: pctLeft, top: pctTop, width: bWidthPct, height: bHeightPct },
-                audioIndex: audioBlobs.length - 1, 
-                clicked: false
-            });
-
-            document.getElementById('zoneCount').innerText = `(${currentZones.length} വാക്കുകൾ ചേർത്തു)`;
-            document.getElementById('audioPlayback').style.display = 'none';
-            document.getElementById('recordStatus').innerText = "";
-            selectionBox.style.display = 'none';
-            alert("വാക്ക് ചേർത്തു!");
-        }
-
-        async function publishToStudentPage() {
-            if(!selectedFile || currentZones.length === 0) return alert("വിവരങ്ങൾ അപൂർണ്ണമാണ്!");
             
-            document.getElementById('loadingOverlay').style.display = 'flex';
-            const pageId = Date.now().toString();
+            if (!response.ok) throw new Error('അപ്‌ലോഡിങ് പരാജയപ്പെട്ടു');
+            return await response.text();
+        }
+
+        // ഫോം സബ്മിറ്റ് ചെയ്യുമ്പോൾ
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const madrasaName = document.getElementById('madrasaName').value;
+            const studentName = document.getElementById('studentName').value;
+            const imageFile = document.getElementById('imageFile').files[0];
+            const audioFile = document.getElementById('audioFile').files[0];
+
+            // ബട്ടൺ ലോഡിങ് ആക്കുക
+            submitBtn.disabled = true;
+            spinner.style.display = 'inline-block';
+            btnText.innerText = "ഫയലുകൾ അപ്‌ലോഡ് ചെയ്യുന്നു... ദയവായി കാത്തിരിക്കൂ...";
 
             try {
-                // 1. ചിത്രം ഫയർബേസിലേക്ക് അപ്‌ലോഡ് ചെയ്യുന്നു
-                const imgRef = storage.ref().child(`images/${pageId}.jpg`);
-                await imgRef.put(selectedFile);
-                const imageUrl = await imgRef.getDownloadURL();
+                // ഫയലുകൾ നേരിട്ട് സുരക്ഷിതമായി അപ്‌ലോഡ് ചെയ്ത് ലിങ്ക് എടുക്കുന്നു
+                const imageUrl = await freeUpload(imageFile);
+                const audioUrl = await freeUpload(audioFile);
 
-                // 2. എല്ലാ ഓഡിയോ ഫയലുകളും അപ്‌ലോഡ് ചെയ്യുന്നു
-                for(let i=0; i<currentZones.length; i++) {
-                    let blobIndex = currentZones[i].audioIndex;
-                    let audioBlob = audioBlobs[blobIndex];
-                    const audioRef = storage.ref().child(`audios/${pageId}_${i}.mp3`);
-                    await audioRef.put(audioBlob);
-                    currentZones[i].audioSrc = await audioRef.getDownloadURL();
-                    delete currentZones[i].audioIndex; // താല്ക്കാലിക ഇൻഡെക്സ് ഒഴിവാക്കുന്നു
-                }
-
-                // 3. ഫയർസ്റ്റോർ ഡാറ്റാബേസിലേക്ക് സേവ് ചെയ്യുന്നു
-                await db.collection("pages").doc(pageId).set({
-                    id: pageId,
-                    image: imageUrl,
-                    zones: currentZones,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                // വിവരങ്ങൾ ഫയർബേസിലേക്ക് മാറ്റുന്നു
+                await db.collection("soundbooks").add({
+                    madrasaName: madrasaName,
+                    studentName: studentName,
+                    imageUrl: imageUrl,
+                    audioUrl: audioUrl,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                alert("🎉 പേജ് വിജയകരമായി ക്ലൗഡിൽ പോസ്റ്റ് ചെയ്തു!");
-                window.location.reload();
+                alert("വിജയകരമായി കുട്ടികൾക്കായി പോസ്റ്റ് ചെയ്തിരിക്കുന്നു!");
+                uploadForm.reset();
+                loadEntries();
             } catch (error) {
                 console.error(error);
-                alert("അപ്‌ലോഡിങ് പരാജയപ്പെട്ടു: " + error.message);
+                alert("തകരാർ സംഭവിച്ചു: ഫയലുകൾ ശരിയായി അപ്‌ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല.");
             } finally {
-                document.getElementById('loadingOverlay').style.display = 'none';
+                // ബട്ടൺ പഴയപടിയാക്കുക
+                submitBtn.disabled = false;
+                spinner.style.display = 'none';
+                btnText.innerHTML = '<i class="fa-solid fa-cloud-arrow-up me-2"></i>പേജ് കുട്ടികൾക്കായി പോസ്റ്റ് ചെയ്യുക';
             }
-        }
+        });
 
-        function loadPostedPages() {
-            db.collection("pages").orderBy("timestamp", "asc").onSnapshot(snapshot => {
-                let listDiv = document.getElementById('postedPagesList');
-                listDiv.innerHTML = '';
-                let index = 1;
-                snapshot.forEach(doc => {
-                    let p = doc.data();
-                    let div = document.createElement('div');
-                    div.className = 'list-item';
-                    div.innerHTML = `<b>പേജ് ${index++}</b> (${p.zones.length} വാക്കുകൾ)`;
-                    let delBtn = document.createElement('button');
-                    delBtn.className = 'btn-delete';
-                    delBtn.innerText = '🗑️ Delete';
-                    delBtn.onclick = function() {
-                        if(confirm("ഈ പേജ് ഡിലീറ്റ് ചെയ്യണോ?")) {
-                            db.collection("pages").doc(doc.id).delete().then(() => loadPostedPages());
-                        }
-                    };
-                    div.appendChild(delBtn);
-                    listDiv.appendChild(div);
+        // ലിസ്റ്റ് കാണിക്കുക
+        function loadEntries() {
+            db.collection("soundbooks").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+                entriesList.innerHTML = "";
+                if(snapshot.empty) {
+                    entriesList.innerHTML = '<div class="text-center text-muted p-3">പോസ്റ്റുകൾ ഒന്നും ലഭ്യമല്ല.</div>';
+                    return;
+                }
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const item = document.createElement('div');
+                    item.className = "list-group-item d-flex justify-content-between align-items-center mb-2 border rounded p-3 shadow-sm bg-white";
+                    item.innerHTML = `
+                        <div>
+                            <h6 class="mb-1 fw-bold text-dark">${data.studentName}</h6>
+                            <small class="text-muted"><i class="fa-solid fa-school me-1"></i>${data.madrasaName}</small>
+                        </div>
+                        <button onclick="deleteEntry('${doc.id}')" class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                    `;
+                    entriesList.appendChild(item);
                 });
             });
         }
 
-        loadMadrasas();
-        loadPostedPages();
+        async function deleteEntry(id) {
+            if(confirm("ഇത് ഡിലീറ്റ് ചെയ്യണം എന്ന് ഉറപ്പാണോ?")) {
+                try {
+                    await db.collection("soundbooks").doc(id).delete();
+                    alert("ഡിലീറ്റ് ചെയ്തിരിക്കുന്നു.");
+                } catch (error) {
+                    alert("ഡിലീറ്റ് ചെയ്യാൻ സാധിച്ചില്ല: " + error.message);
+                }
+            }
+        }
+
+        loadEntries();
     </script>
 </body>
 </html>
