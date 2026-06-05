@@ -3,33 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ഡിജിറ്റൽ സൗണ്ട് ബുക്ക് - ലോഗിൻ & റിവിഷൻ</title>
+    <title>ഡെയിലി റിവിഷൻ - സൗണ്ട് ബുക്ക്</title>
     <style>
         * { box-sizing: border-box; }
         body { font-family: sans-serif; background: #2c3e50; text-align: center; padding: 5px; margin: 0; color: white; }
-        
-        /* ലോഗിൻ ബോക്സ് സ്റ്റൈൽ */
         .login-box { background: white; color: #333; max-width: 400px; margin: 50px auto; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
         select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; font-size: 15px; font-weight: bold; }
         button { background: #2ecc71; color: white; border: none; cursor: pointer; }
-
-        /* മെയിൻ കണ്ടന്റ് */
         .main-content { display: none; }
         .page-box { background: white; border-radius: 8px; padding: 10px; max-width: 500px; margin: 15px auto; position: relative; color: #333; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .img-wrap { position: relative; display: inline-block; width: 100%; background: #000; }
         .img-wrap img { display: block; width: 100%; height: auto; }
         .word-zone { position: absolute; background: transparent; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-        
         .locked { filter: blur(5px) grayscale(100%); pointer-events: none; }
         .lock-text { position: absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); color:white; display:flex; justify-content:center; align-items:center; font-size:15px; font-weight:bold; border-radius: 8px; padding:10px; }
-        
-        /* 📜 സർട്ടിഫിക്കറ്റ് സ്റ്റൈൽ */
-        .certificate-container { display: none; background: #fff; color: #333; max-width: 500px; margin: 20px auto; padding: 25px; border: 8px double #b8860b; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); position: relative; }
+        .certificate-container { display: none; background: #fff; color: #333; max-width: 500px; margin: 20px auto; padding: 25px; border: 8px double #b8860b; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
         .cert-title { font-family: 'Georgia', serif; font-size: 24px; color: #b8860b; font-weight: bold; margin-bottom: 5px; }
         .cert-body { font-size: 16px; line-height: 1.6; margin: 20px 0; }
         .cert-highlight { font-size: 18px; font-weight: bold; color: #2c3e50; border-bottom: 1px dashed #333; padding: 2px 5px; }
         .screenshot-notice { background: #f39c12; color: white; padding: 10px; border-radius: 5px; font-weight: bold; margin-top: 15px; font-size: 14px; }
-        
         h1 { font-size: 20px; margin: 10px 0; }
         h3 { margin: 5px 0; font-size: 15px; color: #2c3e50; }
         .badge { background: #e67e22; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; float: right; }
@@ -39,14 +31,12 @@
 <body>
 
     <div class="login-box" id="loginScreen">
-        <h2 style="margin-top:0; color:#2c3e50;">📖 സ്റ്റുഡന്റ് ലോഗിൻ</h2>
+        <h2 style="margin-top:0; color:#2c3e50;">📖 മദ്രസ ലോഗിൻ</h2>
         <label style="display:block; text-align:left; font-weight:bold;">മദ്രസ തിരഞ്ഞെടുക്കുക:</label>
         <select id="studMadrasaSelect" onchange="loadStudentsForLogin()"></select>
-        
         <label style="display:block; text-align:left; font-weight:bold; margin-top:10px;">പേര് തിരഞ്ഞെടുക്കുക:</label>
         <select id="studNameSelect"></select>
-        
-        <button onclick="startStudentSession()">ரிവിഷൻ തുടങ്ങുക 🚀</button>
+        <button onclick="startStudentSession()">റിവിഷൻ തുടങ്ങുക 🚀</button>
     </div>
 
     <div class="main-content" id="revisionScreen">
@@ -58,19 +48,15 @@
     <div class="certificate-container" id="certificateScreen">
         <div class="cert-title">📜 സർട്ടിഫിക്കറ്റ് 📜</div>
         <div style="font-size: 12px; color: #7f8c8d; letter-spacing: 2px;">CERTIFICATE OF COMPLETION</div>
-        
         <div class="cert-body">
             ഇതുവഴി സാക്ഷ്യപ്പെടുത്തുന്നു, മദ്രസയിലെ <br>
             <span class="cert-highlight" id="certMadrasa"></span>-ൽ പഠിക്കുന്ന<br><br>
-            മിടുക്കനായ / മിടുക്കിയായ വിദ്യാർത്ഥി <br>
-            <span class="cert-highlight" id="certName"></span><br><br>
+            വിദ്യാർത്ഥി <span class="cert-highlight" id="certName"></span><br><br>
             ഇന്നത്തെ ഓഡിയോ റിവിഷൻ പാഠഭാഗങ്ങൾ വിജയകരമായി പൂർത്തിയാക്കിയിരിക്കുന്നു.
             <br><br>
             ⏱️ എടുത്ത സമയം: <span class="cert-highlight" id="certTime" style="color:#c0392b;"></span>
         </div>
-        
         <div style="margin-top: 30px; font-weight: bold; border-top: 1px solid #ddd; padding-top: 10px; color: #b8860b;">🎉 അഭിനന്ദനങ്ങൾ! 🎉</div>
-        
         <div class="screenshot-notice">
             📸 ദയവായി ഈ സ്ക്രീനിന്റെ സ്ക്രീൻഷോട്ട് (Screenshot) എടുത്ത് നിങ്ങളുടെ ഉസ്താദിന് അയച്ചുകൊടുക്കുക.
         </div>
@@ -79,12 +65,10 @@
     <script>
         let schoolData = JSON.parse(localStorage.getItem('madrasaSystemData')) || {};
         let bookPages = JSON.parse(localStorage.getItem('soundBookPages')) || [];
-        
         let selectedMadrasa = "";
         let selectedStudent = "";
         let startTime = null;
 
-        // ലോഗിൻ പേജിൽ മദ്രസ ലിസ്റ്റ് കാണിക്കാൻ
         function initLogin() {
             const mSelect = document.getElementById('studMadrasaSelect');
             mSelect.innerHTML = '<option value="">-- തിരഞ്ഞെടുക്കുക --</option>';
@@ -95,13 +79,11 @@
             }
         }
 
-        // തിരഞ്ഞെടുക്കുന്ന മദ്രസയിലെ കുട്ടികളെ മാത്രം കാണിക്കാൻ
         function loadStudentsForLogin() {
             let mName = document.getElementById('studMadrasaSelect').value;
             const sSelect = document.getElementById('studNameSelect');
             sSelect.innerHTML = '';
             if(!mName || !schoolData[mName]) return;
-            
             schoolData[mName].forEach(stud => {
                 let opt = document.createElement('option');
                 opt.value = stud; opt.innerText = stud;
@@ -109,18 +91,16 @@
             });
         }
 
-        // ലോഗിൻ ചെയ്ത് സെഷൻ ആരംഭിക്കുമ്പോൾ ടൈമർ ഓൺ ആകുന്നു
         function startStudentSession() {
             selectedMadrasa = document.getElementById('studMadrasaSelect').value;
             selectedStudent = document.getElementById('studNameSelect').value;
-            
             if(!selectedMadrasa || !selectedStudent) return alert("ദയവായി വിവരങ്ങൾ തിരഞ്ഞെടുക്കുക!");
             
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('revisionScreen').style.display = 'block';
             document.getElementById('welcomeText').innerText = `👤 വിദ്യാർത്ഥി: ${selectedStudent} (${selectedMadrasa})`;
             
-            startTime = new Date(); // ടൈമർ ആരംഭിക്കുന്നു
+            startTime = new Date();
             renderBook();
         }
 
@@ -129,18 +109,21 @@
             container.innerHTML = bookPages.length === 0 ? '<p style="color:white;">പാഠങ്ങൾ ഒന്നും ലഭ്യമാക്കിയിട്ടില്ല.</p>' : '';
 
             bookPages.forEach((page, index) => {
+                // ലോക്കിംഗ് ലോജിക്: ഒന്നാമത്തെ പേജ് (index 0) എപ്പോഴും അൺലോക്ക് ആയിരിക്കും.
+                // അടുത്ത പേജുകൾ (index > 0) തുറക്കണമെങ്കിൽ അതിന് തൊട്ടുമുൻപത്തെ പേജ് പൂർത്തിയാക്കണം.
                 let isLocked = false;
                 if (index > 0) {
-                    let previousDayPage = bookPages[index - 1];
-                    if (!previousDayPage.completed) isLocked = true;
+                    let previousPage = bookPages[index - 1];
+                    if (!previousPage.completed) {
+                        isLocked = true;
+                    }
                 }
 
                 let box = document.createElement('div');
                 box.className = 'page-box';
                 
-                let pageNum = bookPages.length - index;
-                let statusBadge = page.completed ? '<span class="badge completed">✅ പഠിച്ചു കഴിഞ്ഞു</span>' : '<span class="badge">📖 ഇന്നത്തെ പാഠം</span>';
-                if(index > 0) statusBadge = page.completed ? '<span class="badge completed">✅ റിവിഷൻ കഴിഞ്ഞു</span>' : '<span class="badge">⏳ കാത്തിരിക്കുന്നു</span>';
+                let pageNum = index + 1;
+                let statusBadge = page.completed ? '<span class="badge completed">✅ കഴിഞ്ഞു</span>' : '<span class="badge">📖 പഠിക്കുക</span>';
                 
                 box.innerHTML = `<h3>📚 പാഠം ഭാഗം - പേജ് ${pageNum} ${statusBadge}</h3>`;
 
@@ -178,7 +161,7 @@
                 if(isLocked) {
                     let lock = document.createElement('div');
                     lock.className = 'lock-text';
-                    lock.innerText = `🔒 മുകളിലെ പേജ് പൂർത്തിയാക്കിയാൽ മാത്രമേ ഈ മുൻദിവസത്തെ പേജ് അൺലോക്ക് ആകൂ!`;
+                    lock.innerText = `🔒 മുമ്പത്തെ പേജ് പൂർത്തിയാക്കിയാൽ മാത്രമേ ഈ പേജ് തുറക്കൂ!`;
                     box.appendChild(lock);
                 }
                 container.appendChild(box);
@@ -190,34 +173,27 @@
             if(page.zones.every(z => z.clicked)) {
                 if (!page.completed) {
                     page.completed = true;
+                    localStorage.setItem('soundBookPages', JSON.stringify(bookPages));
                     renderBook();
                 }
             }
-            
-            // ചെക്ക് ചെയ്യുക: എല്ലാ പേജുകളും (ആകെ റിവിഷൻ) കുട്ടി പൂർത്തിയാക്കിയോ?
-            if(bookPages.every(p => p.completed === true)) {
+            if(bookPages.length > 0 && bookPages.every(p => p.completed === true)) {
                 showCertificate();
             }
         }
 
-        // സർട്ടിഫിക്കറ്റ് കാണിക്കുന്ന ഫങ്ഷൻ
         function showCertificate() {
             let endTime = new Date();
-            let timeDiff = endTime - startTime; // മില്ലിസെക്കൻഡിൽ
-            timeDiff /= 1000; // സെക്കൻഡിലേക്ക്
-            
+            let timeDiff = (endTime - startTime) / 1000;
             let minutes = Math.floor(timeDiff / 60);
             let seconds = Math.floor(timeDiff % 60);
-            let finalTimeStr = `${minutes} മിനിറ്റ് ${seconds} സെക്കൻഡ്`;
 
-            // സ്ക്രീൻ മാറ്റുന്നു
             document.getElementById('revisionScreen').style.display = 'none';
             document.getElementById('certificateScreen').style.display = 'block';
             
-            // സർട്ടിഫിക്കറ്റിലേക്ക് വിവരങ്ങൾ നൽകുന്നു
             document.getElementById('certMadrasa').innerText = selectedMadrasa;
             document.getElementById('certName').innerText = selectedStudent;
-            document.getElementById('certTime').innerText = finalTimeStr;
+            document.getElementById('certTime').innerText = `${minutes} മിനിറ്റ് ${seconds} സെക്കൻഡ്`;
         }
 
         initLogin();
