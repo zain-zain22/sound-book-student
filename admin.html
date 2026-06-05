@@ -4,188 +4,156 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>സൗണ്ട് ബുക്ക് - അഡ്മിൻ പാനൽ</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .navbar { background: linear-gradient(135deg, #1e3c72, #2a5298); }
-        .card { border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .btn-primary { background: linear-gradient(135deg, #1e3c72, #2a5298); border: none; }
-        .btn-primary:hover { background: linear-gradient(135deg, #2a5298, #1e3c72); }
-        .loading-spinner { display: none; }
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f0f0f0; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; }
+        label { font-weight: bold; display: block; margin-top: 15px; }
+        input[type="text"], input[type="file"] { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-radius: 4px; border: 1px solid #ccc; }
+        button { width: 100%; padding: 12px; background-color: #4CAF50; color: white; border: none; margin-top: 20px; font-size: 16px; cursor: pointer; border-radius: 4px; }
+        button:hover { background-color: #45a049; }
+        button:disabled { background-color: #ccc; }
+        .entry-item { background: #fff; padding: 10px; margin-top: 10px; border: 1px solid #ddd; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .delete-btn { background-color: #f44336; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-dark shadow-sm mb-4">
-        <div class="container justify-content-center">
-            <span class="navbar-brand mb-0 h1 text-center"><i class="fa-solid fa-user-shield me-2"></i>മദ്രസ സൗണ്ട് ബുക്ക് - അഡ്മിൻ പാനൽ</span>
-        </div>
-    </nav>
+<div class="container">
+    <h2>സൗണ്ട് ബുക്ക് അഡ്മിൻ പാനൽ</h2>
+    
+    <form id="uploadForm">
+        <label>മദ്രസയുടെ പേര്:</label>
+        <input type="text" id="madrasaName" placeholder="മദ്രസയുടെ പേര് ടൈപ്പ് ചെയ്യുക" required>
 
-    <div class="container mb-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                
-                <div class="card p-4 mb-4">
-                    <h4 class="text-center mb-4 text-primary fw-bold">പുതിയ ഫയൽ ചേർക്കുക</h4>
-                    
-                    <form id="uploadForm">
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">മദ്രസയുടെ പേര് / സെക്ഷൻ:</label>
-                            <input type="text" id="madrasaName" class="form-control" placeholder="ഉദാ: ഹിദായത്തുൽ ഇസ്ലാം മദ്രസ" required>
-                        </div>
+        <label>കുട്ടിയുടെ പേര്:</label>
+        <input type="text" id="studentName" placeholder="കുട്ടിയുടെ പേര് ടൈപ്പ് ചെയ്യുക" required>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">കുട്ടിയുടെ പേര്:</label>
-                            <input type="text" id="studentName" class="form-control" placeholder="കുട്ടിയുടെ പേര് ടൈപ്പ് ചെയ്യുക" required>
-                        </div>
+        <label>പാഠപുസ്തകത്തിലെ ചിത്രം തിരഞ്ഞെടുക്കുക:</label>
+        <input type="file" id="imageFile" accept="image/*" required>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">പാഠപുസ്തകത്തിലെ ചിത്രം തിരഞ്ഞെടുക്കുക:</label>
-                            <input type="file" id="imageFile" class="form-control" accept="image/*" required>
-                        </div>
+        <label>കുട്ടിയുടെ ഓഡിയോ റെക്കോർഡിംഗ് തിരഞ്ഞെടുക്കുക:</label>
+        <input type="file" id="audioFile" accept="audio/*" required>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">കുട്ടിയുടെ ഓഡിയോ റെക്കോർഡിംഗ് തിരഞ്ഞെടുക്കുക:</label>
-                            <input type="file" id="audioFile" class="form-control" accept="audio/*" required>
-                        </div>
+        <button type="submit" id="submitBtn">പേജ് കുട്ടികൾക്കായി പോസ്റ്റ് ചെയ്യുക</button>
+    </form>
 
-                        <button type="submit" id="submitBtn" class="btn btn-primary w-100 py-2 fw-bold">
-                            <span class="spinner-border spinner-border-sm loading-spinner me-2" id="spinner"></span>
-                            <span id="btnText"><i class="fa-solid fa-cloud-arrow-up me-2"></i>പേജ് കുട്ടികൾക്കായി പോസ്റ്റ് ചെയ്യുക</span>
-                        </button>
-                    </form>
-                </div>
+    <hr style="margin-top: 30px;">
+    <h3>നിലവിൽ പോസ്റ്റ് ചെയ്തവ:</h3>
+    <div id="entriesList">വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു...</div>
+</div>
 
-                <div class="card p-4">
-                    <h5 class="fw-bold mb-3 text-secondary">നിലവിൽ പോസ്റ്റ് ചെയ്തവ</h5>
-                    <div id="entriesList" class="list-group">
-                        <div class="text-center text-muted p-3">വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു...</div>
-                    </div>
-                </div>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-            </div>
-        </div>
-    </div>
+<script>
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBXSgalqZ3h6Dle6pzu2VMXYkCKM4X3Pis",
+        authDomain: "sond-book.firebaseapp.com",
+        projectId: "sond-book",
+        storageBucket: "sond-book.appspot.com",
+        messagingSenderId: "731880152541",
+        appId: "1:731880152541:web:da0e241383b850381dea34"
+    };
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBXSgalqZ3h6Dle6pzu2VMXYkCKM4X3Pis",
-            authDomain: "sond-book.firebaseapp.com",
-            projectId: "sond-book",
-            storageBucket: "sond-book.appspot.com",
-            messagingSenderId: "731880152541",
-            appId: "1:731880152541:web:da0e241383b850381dea34"
-        };
+    const uploadForm = document.getElementById('uploadForm');
+    const entriesList = document.getElementById('entriesList');
+    const submitBtn = document.getElementById('submitBtn');
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        const uploadForm = document.getElementById('uploadForm');
-        const entriesList = document.getElementById('entriesList');
-        const submitBtn = document.getElementById('submitBtn');
-        const spinner = document.getElementById('spinner');
-        const btnText = document.getElementById('btnText');
-
-        // ഫയലുകൾ സൌജന്യമായി സുരക്ഷിത ലിങ്ക് ആക്കി മാറ്റാനുള്ള ഫങ്ക്ഷൻ
-        async function freeUpload(file) {
-            const formData = new FormData();
-            formData.append('fileToUpload', file);
-            formData.append('reqtype', 'fileupload');
-            
-            // Catbox ഫ്രീ അപ്‌ലോഡിങ് സിസ്റ്റം വഴി ഫയൽ ബാക്ക്ഗ്രൗണ്ടിൽ അപ്‌ലോഡ് ചെയ്യുന്നു
-            const response = await fetch('https://catbox.moe/user/api.php', {
-                method: 'POST',
-                body: formData
-            });
-            
-            if (!response.ok) throw new Error('അപ്‌ലോഡിങ് പരാജയപ്പെട്ടു');
-            return await response.text();
-        }
-
-        // ഫോം സബ്മിറ്റ് ചെയ്യുമ്പോൾ
-        uploadForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const madrasaName = document.getElementById('madrasaName').value;
-            const studentName = document.getElementById('studentName').value;
-            const imageFile = document.getElementById('imageFile').files[0];
-            const audioFile = document.getElementById('audioFile').files[0];
-
-            // ബട്ടൺ ലോഡിങ് ആക്കുക
-            submitBtn.disabled = true;
-            spinner.style.display = 'inline-block';
-            btnText.innerText = "ഫയലുകൾ അപ്‌ലോഡ് ചെയ്യുന്നു... ദയവായി കാത്തിരിക്കൂ...";
-
-            try {
-                // ഫയലുകൾ നേരിട്ട് സുരക്ഷിതമായി അപ്‌ലോഡ് ചെയ്ത് ലിങ്ക് എടുക്കുന്നു
-                const imageUrl = await freeUpload(imageFile);
-                const audioUrl = await freeUpload(audioFile);
-
-                // വിവരങ്ങൾ ഫയർബേസിലേക്ക് മാറ്റുന്നു
-                await db.collection("soundbooks").add({
-                    madrasaName: madrasaName,
-                    studentName: studentName,
-                    imageUrl: imageUrl,
-                    audioUrl: audioUrl,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                alert("വിജയകരമായി കുട്ടികൾക്കായി പോസ്റ്റ് ചെയ്തിരിക്കുന്നു!");
-                uploadForm.reset();
-                loadEntries();
-            } catch (error) {
-                console.error(error);
-                alert("തകരാർ സംഭവിച്ചു: ഫയലുകൾ ശരിയായി അപ്‌ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല.");
-            } finally {
-                // ബട്ടൺ പഴയപടിയാക്കുക
-                submitBtn.disabled = false;
-                spinner.style.display = 'none';
-                btnText.innerHTML = '<i class="fa-solid fa-cloud-arrow-up me-2"></i>പേജ് കുട്ടികൾക്കായി പോസ്റ്റ് ചെയ്യുക';
-            }
+    // ഫയൽ ബാക്ക്ഗ്രൗണ്ടിൽ ഫ്രീയായി അപ്‌ലോഡ് ചെയ്യാനുള്ള ഫങ്ക്ഷൻ
+    async function freeUpload(file) {
+        const formData = new FormData();
+        formData.append('fileToUpload', file);
+        formData.append('reqtype', 'fileupload');
+        
+        const response = await fetch('https://catbox.moe/user/api.php', {
+            method: 'POST',
+            body: formData
         });
+        
+        if (!response.ok) throw new Error('Upload failed');
+        return await response.text();
+    }
 
-        // ലിസ്റ്റ് കാണിക്കുക
-        function loadEntries() {
-            db.collection("soundbooks").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
-                entriesList.innerHTML = "";
-                if(snapshot.empty) {
-                    entriesList.innerHTML = '<div class="text-center text-muted p-3">പോസ്റ്റുകൾ ഒന്നും ലഭ്യമല്ല.</div>';
-                    return;
-                }
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const item = document.createElement('div');
-                    item.className = "list-group-item d-flex justify-content-between align-items-center mb-2 border rounded p-3 shadow-sm bg-white";
-                    item.innerHTML = `
-                        <div>
-                            <h6 class="mb-1 fw-bold text-dark">${data.studentName}</h6>
-                            <small class="text-muted"><i class="fa-solid fa-school me-1"></i>${data.madrasaName}</small>
-                        </div>
-                        <button onclick="deleteEntry('${doc.id}')" class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
-                    `;
-                    entriesList.appendChild(item);
-                });
+    // ഫോം സബ്മിറ്റ് ചെയ്യുമ്പോൾ
+    uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const madrasaName = document.getElementById('madrasaName').value;
+        const studentName = document.getElementById('studentName').value;
+        const imageFile = document.getElementById('imageFile').files[0];
+        const audioFile = document.getElementById('audioFile').files[0];
+
+        submitBtn.disabled = true;
+        submitBtn.innerText = "ഫയലുകൾ അപ്‌ലോഡ് ചെയ്യുന്നു... ദയവായി കാത്തിരിക്കൂ...";
+
+        try {
+            // ഫയലുകൾ ബാക്ക്ഗ്രൗണ്ടിൽ അപ്‌ലോഡ് ചെയ്ത് ലിങ്ക് എടുക്കുന്നു
+            const imageUrl = await freeUpload(imageFile);
+            const audioUrl = await freeUpload(audioFile);
+
+            // ഫയർബേസ് ഡാറ്റാബേസിലേക്ക് സേവ് ചെയ്യുന്നു
+            await db.collection("soundbooks").add({
+                madrasaName: madrasaName,
+                studentName: studentName,
+                imageUrl: imageUrl,
+                audioUrl: audioUrl,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-        }
 
-        async function deleteEntry(id) {
-            if(confirm("ഇത് ഡിലീറ്റ് ചെയ്യണം എന്ന് ഉറപ്പാണോ?")) {
-                try {
-                    await db.collection("soundbooks").doc(id).delete();
-                    alert("ഡിലീറ്റ് ചെയ്തിരിക്കുന്നു.");
-                } catch (error) {
-                    alert("ഡിലീറ്റ് ചെയ്യാൻ സാധിച്ചില്ല: " + error.message);
-                }
+            alert("വിജയകരമായി കുട്ടികൾക്കായി പോസ്റ്റ് ചെയ്തിരിക്കുന്നു!");
+            uploadForm.reset();
+            loadEntries();
+        } catch (error) {
+            console.error(error);
+            alert("തകരാർ സംഭവിച്ചു: ഫയലുകൾ അപ്‌ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല.");
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "പേജ് കുട്ടികൾക്കായി പോസ്റ്റ് ചെയ്യുക";
+        }
+    });
+
+    // ലിസ്റ്റ് കാണിക്കാൻ
+    function loadEntries() {
+        db.collection("soundbooks").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+            entriesList.innerHTML = "";
+            if(snapshot.empty) {
+                entriesList.innerHTML = '<p style="color:gray;">പോസ്റ്റുകൾ ഒന്നും ലഭ്യമല്ല.</p>';
+                return;
+            }
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const item = document.createElement('div');
+                item.className = "entry-item";
+                item.innerHTML = `
+                    <div>
+                        <strong>${data.studentName}</strong> <br>
+                        <small style="color:gray;">${data.madrasaName}</small>
+                    </div>
+                    <button onclick="deleteEntry('${doc.id}')" class="delete-btn">Delete</button>
+                `;
+                entriesList.appendChild(item);
+            });
+        });
+    }
+
+    // ഡിലീറ്റ് ചെയ്യാൻ
+    async function deleteEntry(id) {
+        if(confirm("ഇത് ഡിലീറ്റ് ചെയ്യണം എന്ന് ഉറപ്പാണോ?")) {
+            try {
+                await db.collection("soundbooks").doc(id).delete();
+                alert("ഡിലീറ്റ് ചെയ്തിരിക്കുന്നു.");
+            } catch (error) {
+                alert("ഡിലീറ്റ് ചെയ്യാൻ സാധിച്ചില്ല: " + error.message);
             }
         }
+    }
 
-        loadEntries();
-    </script>
+    loadEntries();
+</script>
 </body>
 </html>
